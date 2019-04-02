@@ -112,6 +112,7 @@ def like_users(self, user_ids, nlikes=None, filtration=True):
         if self.reached_limit('likes'):
             self.logger.info("Out of likes for today.")
             return
+        time.sleep(10)
         self.like_user(user_id, amount=nlikes, filtration=filtration)
 
 
