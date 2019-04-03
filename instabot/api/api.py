@@ -670,7 +670,7 @@ class API(object):
                 try:
                     with open(to_file, 'a') if to_file is not None else StringIO() as f:
                         for item in last_json["users"]:
-                            self.logger.info("Username {}, PK {}".format(item['username'], item['pk']))
+                            self.logger.info("Username {}, PK {}, item: {}".format(item['username'], item['pk'], str(item))
 
                             if filter_private and item['is_private']:
                                 self.logger.info("User %s is private",item['username'])
