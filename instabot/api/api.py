@@ -158,6 +158,8 @@ class API(object):
             self.logger.critical(msg)
             raise Exception(msg)
 
+        self.logger.info("Sending request %s", config.API_URL + endpoint)
+
         self.session.headers.update(config.REQUEST_HEADERS)
         self.session.headers.update({'User-Agent': self.user_agent})
         try:
@@ -668,15 +670,20 @@ class API(object):
                 try:
                     with open(to_file, 'a') if to_file is not None else StringIO() as f:
                         for item in last_json["users"]:
+                            self.logger.info("Username {}, PK {}".format(item['username'], item['pk']))
+
                             if filter_private and item['is_private']:
+                                self.logger.info("User %s is private",item['username'])
                                 continue
                             if filter_business:
+                                self.logger.info("User %s is business",item['username'])
                                 time.sleep(2 * random())
                                 self.get_username_info(item['pk'])
                                 item_info = self.last_json
                                 if item_info['user']['is_business']:
                                     continue
                             if filter_verified and item['is_verified']:
+                                self.logger.info("User %s is verified",item['username'])
                                 continue
                             if to_file is not None:
                                 if usernames:
