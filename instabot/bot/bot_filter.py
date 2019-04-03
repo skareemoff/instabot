@@ -109,6 +109,8 @@ def search_blacklist_hashtags_in_media(self, media_id):
 
 
 def check_user(self, user_id, unfollowing=False):
+    self.logger.info("Checking user {}".format(user_id))
+    
     if not self.filter_users and not unfollowing:
         return True
 
