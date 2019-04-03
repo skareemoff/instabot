@@ -327,6 +327,9 @@ def get_messages(self):
 def convert_to_user_id(self, x):
     self.logger.info("Converting to user ID: %s", x)
     x = str(x)
+    if x.startswith("user_"):
+        raise ValueError(x)
+        
     if not x.isdigit():
         x = x.lstrip('@')
         x = self.get_user_id_from_username(x)
