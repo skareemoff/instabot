@@ -94,6 +94,9 @@ def like_timeline(self, amount=None):
 
 
 def like_user(self, user_id, amount=None, filtration=True):
+    
+    self.logger.info("Liking user ID: {}".format(user_id))
+    
     """ Likes last user_id's medias """
     if filtration:
         if not self.check_user(user_id):
@@ -113,8 +116,6 @@ def like_users(self, user_ids, nlikes=None, filtration=True):
         if self.reached_limit('likes'):
             self.logger.info("Out of likes for today.")
             return
-        self.logger.info("Sleeping a little between requests")
-        time.sleep(10)
         self.like_user(user_id, amount=nlikes, filtration=filtration)
 
 
