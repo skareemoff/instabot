@@ -158,8 +158,6 @@ class API(object):
             self.logger.critical(msg)
             raise Exception(msg)
 
-        self.logger.info("Sending request %s", config.API_URL + endpoint)
-
         self.session.headers.update(config.REQUEST_HEADERS)
         self.session.headers.update({'User-Agent': self.user_agent})
         try:
