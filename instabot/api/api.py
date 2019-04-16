@@ -27,11 +27,12 @@ PY2 = sys.version_info[0] == 2
 
 
 class API(object):
-    def __init__(self, device=None):
+    def __init__(self, device=None, base_path=''):
         # Setup device and user_agent
         device = device or devices.DEFAULT_DEVICE
         self.device_settings = devices.DEVICES[device]
         self.user_agent = config.USER_AGENT_BASE.format(**self.device_settings)
+        self.base_path = base_path
 
         self.is_logged_in = False
         self.last_response = None
@@ -40,7 +41,8 @@ class API(object):
         # Setup logging
         self.logger = logging.getLogger('[instabot_{}]'.format(id(self)))
 
-        fh = logging.FileHandler(filename='instabot.log')
+        log_filename = os.path.join(base_path, 'instabot.log')
+        fh = logging.FileHandler(filename=log_filename)
         fh.setLevel(logging.INFO)
         fh.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
 
@@ -71,6 +73,7 @@ class API(object):
 
         if not cookie_fname:
             cookie_fname = "{username}_cookie.txt".format(username=username)
+            cookie_fname = os.path.join(self.base_path, cookie_fname)
 
         cookie_is_loaded = False
         if use_cookie:
@@ -223,11 +226,14 @@ class API(object):
                             if 'message' in resp_json:
                                 self.logger.error("Login error: {}".format(resp_json['message']))
                             else:
-                                self.logger.error("Login error: \"{}\" status and message {}.".format(resp_json['status'], login.text))
+                                self.logger.error(
+                                    "Login error: \"{}\" status and message {}.".format(resp_json['status'],
+                                                                                        login.text))
                             return False
                         return True
                     else:
-                        self.logger.error("Two-factor authentication request returns {} error with message {} !".format(login.status_code, login.text))
+                        self.logger.error("Two-factor authentication request returns {} error with message {} !".format(
+                            login.status_code, login.text))
                         return False
                 # End of Interactive Two-Factor Authentication
                 else:
@@ -894,3 +900,23 @@ class API(object):
     def get_saved_medias(self):
         url = 'feed/saved/'
         return self.send_request(url)
+
+    def mute_user(self, user, mute_story=False, mute_posts=False):
+        data_dict = {}
+        if mute_posts:
+            data_dict['target_posts_author_id'] = user
+        if mute_story:
+            data_dict['target_reel_author_id'] = user
+        data = self.json_data(data_dict)
+        url = 'friendships/mute_posts_or_story_from_follow/'
+        return self.send_request(url, data)
+
+    def unmute_user(self, user, unmute_posts=False, unmute_stories=False):
+        data_dict = {}
+        if unmute_posts:
+            data_dict['target_posts_author_id'] = user
+        if unmute_stories:
+            data_dict['target_reel_author_id'] = user
+        data = self.json_data(data_dict)
+        url = 'friendships/unmute_posts_or_story_from_follow/'
+        return self.send_request(url, data)
